@@ -3654,19 +3654,19 @@ If POS is nil, use `point' instead."
   (interactive "p")
   (fountain-outline-shift-down (- n)))
 
-(defun fountain-outline-hide-level (n &optional silent)
-  "Set outline visibilty to outline level N.
-Display a message unless SILENT."
-  (cond ((= n 0)
+(defun fountain-outline-hide-level (level &optional message)
+  "Set outline visibilty to outline level LEVEL.
+If MESSAGE is non-nil, display a message in the echo area."
+  (cond ((= level 0)
          (outline-show-all)
-         (unless silent (message "Showing all")))
-        ((= n 6)
-         (outline-hide-sublevels n)
-         (unless silent (message "Showing scene headings")))
+         (if message (message "Showing all")))
+        ((= level 6)
+         (outline-hide-sublevels level)
+         (if message (message "Showing scene headings")))
         (t
-         (outline-hide-sublevels n)
-         (unless silent (message "Showing level %s headings" n))))
-  (setq fountain--outline-cycle n))
+         (outline-hide-sublevels level)
+         (if message (message "Showing level %s headings" level))))
+  (setq fountain--outline-cycle level))
 
 (defun fountain-outline-cycle (&optional arg) ; FIXME: document
   "\\<fountain-mode-map>Cycle outline visibility depending on ARG.
@@ -3707,21 +3707,21 @@ Display a message unless SILENT."
     (cond ((eq arg 4)
            (cond
             ((and (= fountain--outline-cycle 1) custom-level)
-             (fountain-outline-hide-level custom-level))
+             (fountain-outline-hide-level custom-level t))
             ((< 0 fountain--outline-cycle 6)
-             (fountain-outline-hide-level 6))
+             (fountain-outline-hide-level 6 t))
             ((= fountain--outline-cycle 6)
-             (fountain-outline-hide-level 0))
+             (fountain-outline-hide-level fountain--outline-minimum-level t))
             ((= highest-level 6)
-             (fountain-outline-hide-level 6))
+             (fountain-outline-hide-level 6 t))
             (t
-             (fountain-outline-hide-level highest-level))))
+             (fountain-outline-hide-level highest-level t))))
           ((eq arg 16)
            (outline-show-all)
            (message "Showing all")
            (setq fountain--outline-cycle 0))
           ((and (eq arg 64) custom-level)
-           (fountain-outline-hide-level custom-level))
+           (fountain-outline-hide-level custom-level t))
           (t
            (save-excursion
              (outline-back-to-heading)
@@ -5129,7 +5129,9 @@ keywords suitable for Font Lock."
   (jit-lock-register #'fountain-completion-update-characters)
   (fountain-init-mode-line)
   (fountain-restart-page-count-timer)
-  (fountain-outline-hide-level fountain-outline-startup-level t))
+  (fountain-outline-hide-level fountain-outline-startup-level))
+
+
 
 (provide 'fountain-mode)
 
