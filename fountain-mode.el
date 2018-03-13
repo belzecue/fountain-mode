@@ -3862,6 +3862,12 @@ See `display-buffer-in-side-window' for example options."
   :type 'alist
   :group 'fountain-outline)
 
+(defcustom fountain-outline-sidebar-select-window
+  t
+  "If non-nil, switch to sidebar windows upon displaying them."
+  :type 'boolean
+  :group 'fountain-outline)
+
 (defvar fountain-outline-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'quit-window)
@@ -3888,7 +3894,7 @@ See `display-buffer-in-side-window' for example options."
            fountain-outline-sidebar-display-alist)
           (with-current-buffer buffer
             (fountain-outline-mode 1))))
-      (if fountain-sidebar-select-window
+      (if fountain-outline-sidebar-select-window
           (select-window (get-buffer-window buffer (selected-frame)))))))
 
 (define-minor-mode fountain-outline-mode
