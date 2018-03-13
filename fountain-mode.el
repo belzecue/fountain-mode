@@ -3555,6 +3555,12 @@ Used by `fountain-outline-cycle'.")
 
 Used by `fountain-outline-cycle'.")
 
+(defvar-local fountain--outline-minimum-level
+  0
+  "Internal local integer representing minimum outline level.
+
+Used by `fountain-outline-mode'.")
+
 (defcustom fountain-outline-startup-level
   0
   "Outline level to show when visiting a file."
@@ -3572,6 +3578,12 @@ Used by `fountain-outline-cycle'.")
                  (const :tag "Include level 3" 3)
                  (const :tag "Include level 4" 4)
                  (const :tag "Include level 5" 5))
+  :group 'fountain)
+
+(defcustom fountain-outline-sidebar-level
+  2
+  "Outline level to show when displaying `fountain-outline-mode' buffer."
+  :type 'integer
   :group 'fountain)
 
 (defalias 'fountain-outline-next 'outline-next-visible-heading)
@@ -3753,12 +3765,14 @@ If MESSAGE is non-nil, display a message in the echo area."
                  (setq fountain--outline-cycle-subtree 0))
                 ((and (<= eos eol)
                       children)
-                 (outline-show-entry)
+                 (if (= fountain--outline-minimum-level 0)
+                     (outline-show-entry))
                  (outline-show-children)
                  (message "Showing headings")
                  (setq fountain--outline-cycle-subtree 2))
-                ((or (<= eos eol)
-                     (= fountain--outline-cycle-subtree 2))
+                ((and (= fountain--outline-minimum-level 0)
+                      (or (<= eos eol)
+                          (= fountain--outline-cycle-subtree 2)))
                  (outline-show-subtree)
                  (message "Showing contents")
                  (setq fountain--outline-cycle-subtree 3))
@@ -3793,20 +3807,109 @@ data reflects `outline-regexp'."
          (string-width (match-string 2)))
         (t 6)))
 
+(defcustom fountain-pop-up-indirect-windows
+  nil
+  "Non-nil if opening indirect buffers should make a new window."
+  :type 'boolean
+  :group 'fountain)
+
 (defun fountain-outline-to-indirect-buffer ()
   (interactive)
-  (let (beg end heading-name)
+  (let ((pop-up-windows fountain-pop-up-indirect-windows)
+        (base-buffer (buffer-name (buffer-base-buffer)))
+        beg end heading-name target-buffer)
     (save-excursion
-      (outline-back-to-heading t)
-      (setq beg (point))
-      (if (or (fountain-match-section-heading)
-              (fountain-match-scene-heading))
-          (setq heading-name (match-string-no-properties 3)))
-      (outline-end-of-subtree)
-      (setq end (point)))
-    (clone-indirect-buffer heading-name t)
-    (narrow-to-region beg end)
-    (outline-show-all)))
+      (save-restriction
+        (widen)
+        (outline-back-to-heading t)
+        (setq beg (point))
+        (when (or (fountain-match-section-heading)
+                  (fountain-match-scene-heading))
+          (setq heading-name (match-string-no-properties 3)
+                target-buffer (concat base-buffer "-" heading-name))
+          (outline-end-of-subtree)
+          (setq end (point)))))
+    (if (and (get-buffer target-buffer)
+             (with-current-buffer target-buffer
+               (goto-char beg)
+               (and (or (fountain-match-section-heading)
+                        (fountain-match-scene-heading))
+                    (string= heading-name (match-string-no-properties 3)))))
+        (pop-to-buffer target-buffer)
+      (clone-indirect-buffer target-buffer t)
+      (outline-show-all))
+    (narrow-to-region beg end)))
+
+
+;;; Fountain Outline Mode
+
+(defcustom fountain-outline-sidebar-buffer
+  "%s<outline>"
+    "Name of buffer in which to display `fountain-outline-mode' sidebar.
+`%s' is replaced with original `buffer-name'.
+
+To hide this buffer from the buffer list, prefix with a space."
+  :type 'string
+  :group 'fountain-outline)
+
+(defcustom fountain-outline-sidebar-display-alist
+  '((side . left)
+    (window-width . 35)
+    (slot . -1))
+  "Alist used to display `foutlain-outine-mode' sidebar.
+
+See `display-buffer-in-side-window' for example options."
+  :type 'alist
+  :group 'fountain-outline)
+
+(defvar fountain-outline-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "q") #'quit-window)
+    (define-key map (kbd "RET") #'fountain-outline-to-indirect-buffer)
+    (define-key map (kbd "n") #'fountain-outline-next)
+    (define-key map (kbd "p") #'fountain-outline-previous)
+    (define-key map (kbd "f") #'fountain-outline-forward)
+    (define-key map (kbd "b") #'fountain-outline-back)
+    map))
+
+(defun fountain-toggle-outline-sidebar ()
+  (interactive)
+  (set-buffer (or (buffer-base-buffer) (current-buffer)))
+  (let ((source (current-buffer))
+        (buffer (format fountain-outline-sidebar-buffer (buffer-name))))
+    (if (get-buffer-window buffer (selected-frame))
+        (delete-windows-on buffer (selected-frame))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (display-buffer-in-side-window
+           (or (get-buffer buffer)
+               (make-indirect-buffer source buffer t))
+           fountain-outline-sidebar-display-alist)
+          (with-current-buffer buffer
+            (fountain-outline-mode 1))))
+      (if fountain-sidebar-select-window
+          (select-window (get-buffer-window buffer (selected-frame)))))))
+
+(define-minor-mode fountain-outline-mode
+  "Minor mode for navigating `fountain-mode' outline."
+  :group 'fountain
+  :init-value nil
+  :lighter " Foutl"
+  (if (and (eq major-mode 'fountain-mode)
+           fountain-outline-mode)
+      (save-excursion
+        (widen)
+        (goto-char (point-min))
+        (unless (or (fountain-match-section-heading)
+                    (fountain-match-scene-heading))
+          (fountain-outline-next 1))
+        (narrow-to-region (point) (point-max))
+        (face-remap-add-relative 'default 'fountain-outline)
+        (add-to-invisibility-spec 'outline)
+        (fountain-outline-hide-level fountain-outline-sidebar-level)
+        (setq fountain--outline-minimum-level 1)
+        (setq buffer-read-only t))))
 
 
 ;;; Navigation
