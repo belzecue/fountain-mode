@@ -3930,7 +3930,7 @@ See `display-buffer-in-side-window' for example options."
                     (fountain-match-scene-heading))
           (fountain-outline-next 1))
         (narrow-to-region (point) (point-max))
-        (face-remap-add-relative 'default 'fountain-outline)
+        (face-remap-add-relative 'fountain 'fountain-outline)
         (add-to-invisibility-spec 'outline)
         (fountain-outline-hide-level fountain-outline-sidebar-level)
         (setq fountain--outline-minimum-level 1)
