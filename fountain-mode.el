@@ -3843,6 +3843,11 @@ data reflects `outline-regexp'."
 
 ;;; Fountain Outline Mode
 
+(defface fountain-outline
+  '((t nil))
+  "Default face for `fountain-outline-mode' buffer."
+  :group 'fountain-faces)
+
 (defcustom fountain-outline-sidebar-buffer
   "%s<outline>"
     "Name of buffer in which to display `fountain-outline-mode' sidebar.
