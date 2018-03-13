@@ -4954,7 +4954,7 @@ keywords suitable for Font Lock."
 
 (defvar fountain-mode-map
   (let ((map (make-sparse-keymap)))
-    ;; Editing commands:
+    ;; Editing commands
     (define-key map (kbd "TAB") #'fountain-tab-action)
     (define-key map (kbd "C-c RET") #'fountain-upcase-line-and-newline)
     (define-key map (kbd "<S-return>") #'fountain-upcase-line-and-newline)
@@ -4971,7 +4971,7 @@ keywords suitable for Font Lock."
     (define-key map (kbd "C-c C-x a") #'fountain-completion-update)
     ;; FIXME: include-find-file feels like it should be C-c C-c...
     ;; (define-key map (kbd "C-c C-c") #'fountain-include-find-file)
-    ;; Navigation commands:
+    ;; Navigation commands
     (define-key map [remap forward-list] #'fountain-forward-scene)
     (define-key map [remap backward-list] #'fountain-backward-scene)
     (define-key map [remap beginning-of-defun] #'fountain-beginning-of-scene)
@@ -4981,7 +4981,7 @@ keywords suitable for Font Lock."
     (define-key map (kbd "M-g p") #'fountain-goto-page)
     (define-key map (kbd "M-n") #'fountain-forward-character)
     (define-key map (kbd "M-p") #'fountain-backward-character)
-    ;; Outline commands:
+    ;; Outline commands
     (define-key map (kbd "C-c C-o") #'fountain-outline-to-indirect-buffer)
     (define-key map (kbd "C-c C-n") #'fountain-outline-next)
     (define-key map (kbd "C-c C-p") #'fountain-outline-previous)
@@ -4994,11 +4994,12 @@ keywords suitable for Font Lock."
     (define-key map (kbd "C-c TAB") #'fountain-outline-cycle)
     (define-key map (kbd "<backtab>") #'fountain-outline-cycle-global)
     (define-key map (kbd "S-TAB") #'fountain-outline-cycle-global)
+    (define-key map (kbd "M-s q") #'fountain-toggle-outline-sidebar)
     ;; Pages
     (define-key map (kbd "C-c C-x p") #'fountain-count-pages)
-    ;; Endnotes:
+    ;; Endnotes
     (define-key map (kbd "M-s e") #'fountain-show-or-hide-endnotes)
-    ;; Exporting commands:
+    ;; Exporting commands
     (define-key map (kbd "C-c C-e e") #'fountain-export-buffer)
     (define-key map (kbd "C-c C-e C-e") #'fountain-export-default)
     (define-key map (kbd "C-c C-e h") #'fountain-export-buffer-to-html)
@@ -5041,7 +5042,9 @@ keywords suitable for Font Lock."
      "---"
      ["Mark Section/Scene" fountain-outline-mark]
      ["Shift Section/Scene Up" fountain-outline-shift-up]
-     ["Shift Section/Scene Down" fountain-outline-shift-down])
+     ["Shift Section/Scene Down" fountain-outline-shift-down]
+     "---"
+     ["Toggle Outline Sidebar" fountain-toggle-outline-sidebar])
     ("Scene Numbers"
      ["Add Scene Numbers" fountain-add-scene-numbers]
      ["Remove Scene Numbers" fountain-remove-scene-numbers]
