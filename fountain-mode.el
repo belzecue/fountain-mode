@@ -3873,7 +3873,7 @@ To hide this buffer from the buffer list, prefix with a space."
 
 (defcustom fountain-outline-sidebar-display-alist
   '((side . left)
-    (window-width . 35)
+    (window-width . 40)
     (slot . -1))
   "Alist used to display `foutlain-outine-mode' sidebar.
 
