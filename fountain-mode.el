@@ -3828,6 +3828,10 @@ data reflects `outline-regexp'."
   :group 'fountain)
 
 (defun fountain-outline-to-indirect-buffer ()
+  "Clone section/scene at point to indirect buffer.
+
+Set `fountain-pop-up-indirect-windows' to control how indirect
+buffer windows are opened."
   (interactive)
   (let ((pop-up-windows fountain-pop-up-indirect-windows)
         (base-buffer (buffer-name (buffer-base-buffer)))
@@ -5001,6 +5005,7 @@ keywords suitable for Font Lock."
     (define-key map (kbd "C-c TAB") #'fountain-outline-cycle)
     (define-key map (kbd "<backtab>") #'fountain-outline-cycle-global)
     (define-key map (kbd "S-TAB") #'fountain-outline-cycle-global)
+    (define-key map (kbd "M-s q") #'fountain-toggle-outline-sidebar)
     (define-key map (kbd "C-c C-x b") #'fountain-outline-to-indirect-buffer)
     ;; Pages
     (define-key map (kbd "C-c C-x p") #'fountain-count-pages)
