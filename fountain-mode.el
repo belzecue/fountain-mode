@@ -3894,7 +3894,10 @@ See `display-buffer-in-side-window' for example options."
     (define-key map (kbd "n") #'fountain-outline-next)
     (define-key map (kbd "p") #'fountain-outline-previous)
     (define-key map (kbd "f") #'fountain-outline-forward)
-    (define-key map (kbd "b") #'fountain-outline-back)
+    (define-key map (kbd "b") #'fountain-outline-backward)
+    (define-key map (kbd "u") #'fountain-outline-up)
+    (define-key map (kbd "<") #'beginning-of-buffer)
+    (define-key map (kbd ">") #'end-of-buffer)
     map))
 
 (defun fountain-toggle-outline-sidebar ()
