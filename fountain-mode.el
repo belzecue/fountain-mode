@@ -4989,8 +4989,7 @@ keywords suitable for Font Lock."
     (define-key map (kbd "M-g p") #'fountain-goto-page)
     (define-key map (kbd "M-n") #'fountain-forward-character)
     (define-key map (kbd "M-p") #'fountain-backward-character)
-    ;; Outline commands
-    (define-key map (kbd "C-c C-o") #'fountain-outline-to-indirect-buffer)
+    ;; Outline commands:
     (define-key map (kbd "C-c C-n") #'fountain-outline-next)
     (define-key map (kbd "C-c C-p") #'fountain-outline-previous)
     (define-key map (kbd "C-c C-f") #'fountain-outline-forward)
@@ -5002,7 +5001,7 @@ keywords suitable for Font Lock."
     (define-key map (kbd "C-c TAB") #'fountain-outline-cycle)
     (define-key map (kbd "<backtab>") #'fountain-outline-cycle-global)
     (define-key map (kbd "S-TAB") #'fountain-outline-cycle-global)
-    (define-key map (kbd "M-s q") #'fountain-toggle-outline-sidebar)
+    (define-key map (kbd "C-c C-x b") #'fountain-outline-to-indirect-buffer)
     ;; Pages
     (define-key map (kbd "C-c C-x p") #'fountain-count-pages)
     ;; Endnotes
