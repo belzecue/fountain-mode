@@ -3908,18 +3908,18 @@ See `display-buffer-in-side-window' for example options."
 (defun fountain-toggle-outline-sidebar ()
   (interactive)
   (set-buffer (or (buffer-base-buffer) (current-buffer)))
-  (let ((source (current-buffer))
-        (buffer (format fountain-outline-sidebar-buffer (buffer-name))))
-    (if (get-buffer-window buffer (selected-frame))
-        (delete-windows-on buffer (selected-frame))
+  (let ((buffer (current-buffer))
+        (side-buffer (format fountain-outline-sidebar-buffer (buffer-name))))
+    (if (get-buffer-window side-buffer (selected-frame))
+        (delete-windows-on side-buffer (selected-frame))
       (save-excursion
         (save-restriction
           (widen)
           (display-buffer-in-side-window
-           (or (get-buffer buffer)
-               (make-indirect-buffer source buffer t))
+           (or (get-buffer side-buffer)
+               (make-indirect-buffer buffer side-buffer t))
            fountain-outline-sidebar-display-alist)
-          (with-current-buffer buffer
+          (with-current-buffer side-buffer
             (fountain-outline-mode 1))))
       (if fountain-outline-sidebar-select-window
           (select-window (get-buffer-window buffer (selected-frame)))))))
