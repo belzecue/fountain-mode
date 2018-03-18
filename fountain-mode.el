@@ -4,7 +4,7 @@
 
 ;; Author: Paul Rankin <hello@paulwrankin.com>
 ;; Keywords: wp
-;; Version: 2.5.1
+;; Version: 2.5.3
 ;; Package-Requires: ((emacs "24.5"))
 ;; URL: https://github.com/rnkn/fountain-mode
 
@@ -140,7 +140,7 @@
 ;;; Code:
 
 (defconst fountain-version
-  "2.5.1")
+  "2.5.3")
 
 (defun fountain-version ()
   "Return `fountain-mode' version."
@@ -170,9 +170,6 @@
 
 (define-obsolete-variable-alias 'fountain-export-style-template
   'fountain-export-html-stylesheet "2.4.0")
-
-(define-obsolete-function-alias 'fountain-toggle-hide-escapes
-  'fountain-toggle-hide-syntax-chars "1.3.0")
 
 (define-obsolete-face-alias 'fountain-centered
   'fountain-center "1.1.0")
@@ -1621,20 +1618,17 @@ number."
           (if (and (not found) (<= x (point))) (setq current total found t)))
         (cons current total)))))
 
-(defun fountain-count-pages ()
+(defun fountain-count-pages (&optional interactive)
   "Return the approximate current page of total pages in current buffer.
 
-If called interactively, print message in echo area.
-
-If point is beyond script end break, current page number is
-returned as 0."
-  (interactive)
+If called interactively, sets INTERACTIVE as non-nil
+unconditionally and prints a message in the echo area."
+  (interactive "p")
   (fountain-pages-update-mode-line)
   (redisplay)
   (let ((pages (fountain-get-page-count)))
     (fountain-pages-update-mode-line (car pages) (cdr pages))
-    (if (called-interactively-p)
-        (message "Page %d of %d" (car pages) (cdr pages)))))
+    (if interactive (message "Page %d of %d" (car pages) (cdr pages)))))
 
 (defun fountain-pages-update-mode-line (&optional current total)
   (setq fountain-page-count-string
@@ -1808,7 +1802,7 @@ within left-side dual dialogue, and nil otherwise."
                            (stringp (match-string 5))))
                'left))))))
 
-(defun fountain-starts-new-page (&optional limit) ; FIXME: implement LIMIT
+(defun fountain-starts-new-page () ; FIXME: implement LIMIT
   (save-excursion
     (save-match-data
       (save-restriction
@@ -1971,6 +1965,7 @@ Includes child elements."
 
 (defun fountain-parse-center (match-data &optional export-elements job)
   "Return an element list for matched center text."
+  (set-match-data match-data)
   (list 'center
         (list 'begin (match-beginning 0)
               'end (match-end 0)
