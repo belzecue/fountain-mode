@@ -3589,9 +3589,9 @@ Used by `fountain-outline-mode'.")
                  (const :tag "Include level 5" 5))
   :group 'fountain)
 
-(defcustom fountain-outline-sidebar-level
+(defcustom fountain-outline-minor-mode-level
   2
-  "Outline level to show when displaying `fountain-outline-mode' buffer."
+  "Outline level to show when entering `fountain-outline-minor-mode'."
   :type 'integer
   :group 'fountain)
 
@@ -3854,7 +3854,7 @@ buffer windows are opened."
     (narrow-to-region beg end)))
 
 
-;;; Fountain Outline Mode
+;;; Fountain Outline Minor Mode
 
 (defface fountain-outline
   '((t nil))
@@ -3886,9 +3886,9 @@ See `display-buffer-in-side-window' for example options."
   :type 'boolean
   :group 'fountain-outline)
 
-(defvar fountain-outline-mode-map
+(defvar fountain-outline-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "q") #'quit-window)
+    (define-key map (kbd "q") #'fountain-outline-quit)
     (define-key map (kbd "RET") #'fountain-outline-to-indirect-buffer)
     (define-key map (kbd "n") #'fountain-outline-next)
     (define-key map (kbd "p") #'fountain-outline-previous)
@@ -3898,6 +3898,12 @@ See `display-buffer-in-side-window' for example options."
     (define-key map (kbd "<") #'beginning-of-buffer)
     (define-key map (kbd ">") #'end-of-buffer)
     map))
+
+(defun fountain-outline-quit ()
+  (interactive)
+  (if (window-parameter (selected-window) 'window-side)
+      (quit-window)
+    (fountain-outline-minor-mode 0)))
 
 (defun fountain-toggle-outline-sidebar ()
   (interactive)
@@ -3918,13 +3924,13 @@ See `display-buffer-in-side-window' for example options."
       (if fountain-outline-sidebar-select-window
           (select-window (get-buffer-window buffer (selected-frame)))))))
 
-(define-minor-mode fountain-outline-mode
+(define-minor-mode fountain-outline-minor-mode
   "Minor mode for navigating `fountain-mode' outline."
   :group 'fountain
   :init-value nil
   :lighter " Foutl"
   (if (and (eq major-mode 'fountain-mode)
-           fountain-outline-mode)
+           fountain-outline-minor-mode)
       (save-excursion
         (widen)
         (goto-char (point-min))
@@ -3934,9 +3940,9 @@ See `display-buffer-in-side-window' for example options."
         (narrow-to-region (point) (point-max))
         (face-remap-add-relative 'fountain 'fountain-outline)
         (add-to-invisibility-spec 'outline)
-        (fountain-outline-hide-level fountain-outline-sidebar-level)
         (setq fountain--outline-minimum-level 1)
         (setq buffer-read-only t))))
+        (fountain-outline-hide-level fountain-outline-minor-mode-level)
 
 
 ;;; Navigation
@@ -5001,6 +5007,7 @@ keywords suitable for Font Lock."
     (define-key map (kbd "<backtab>") #'fountain-outline-cycle-global)
     (define-key map (kbd "S-TAB") #'fountain-outline-cycle-global)
     (define-key map (kbd "M-s q") #'fountain-toggle-outline-sidebar)
+    (define-key map (kbd "M-s t") #'fountain-outline-minor-mode)
     (define-key map (kbd "C-c C-x b") #'fountain-outline-to-indirect-buffer)
     ;; Pages
     (define-key map (kbd "C-c C-x p") #'fountain-count-pages)
