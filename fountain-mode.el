@@ -3882,7 +3882,7 @@ See `display-buffer-in-side-window' for example options."
 
 (defcustom fountain-outline-sidebar-select-window
   t
-  "If non-nil, switch to sidebar windows upon displaying them."
+  "If non-nil, switch to outline sidebar windows upon displaying it."
   :type 'boolean
   :group 'fountain-outline)
 
@@ -3920,9 +3920,9 @@ See `display-buffer-in-side-window' for example options."
                (make-indirect-buffer buffer side-buffer t))
            fountain-outline-sidebar-display-alist)
           (with-current-buffer side-buffer
-            (fountain-outline-mode 1))))
+            (fountain-outline-minor-mode 1))))
       (if fountain-outline-sidebar-select-window
-          (select-window (get-buffer-window buffer (selected-frame)))))))
+          (select-window (get-buffer-window side-buffer (selected-frame)))))))
 
 (define-minor-mode fountain-outline-minor-mode
   "Minor mode for navigating `fountain-mode' outline."
